@@ -21,7 +21,7 @@ export class AwsLambdaDetector implements Detector {
 
     async detect(_config?: ResourceDetectionConfig): Promise<Resource> {
 
-        console.log("Context: ", this.context); 
+        console.log("Context: ", this.context);
 
         let otelResource = await otelAWSLambdaDetector.detect();
 
@@ -29,27 +29,49 @@ export class AwsLambdaDetector implements Detector {
             return Resource.empty();
         }
 
-        var params = {
-            FunctionName: process.env.AWS_LAMBDA_FUNCTION_NAME, /* required */
-        };
-        let lambda = new LambdaClient({});
-        const command = new GetFunctionCommand(params);
-        const response = await lambda.send(command);
+        if(this.context) {
+            try{
+                console.log("In Context flow")
+                const additionalAttributes = { [SemanticResourceAttributes.FAAS_ID]: (this.context as any).invokedFunctionArn }
+                const resourceWithAdditionalAttributes = new Resource(additionalAttributes)
 
-        if (response.Configuration) {
-            const additionalAttributes = { [SemanticResourceAttributes.FAAS_ID]: response.Configuration.FunctionArn! }
+                const mergedResource = otelResource.merge(resourceWithAdditionalAttributes)
 
-            const resourceWithAdditionalAttributes = new Resource(additionalAttributes)
-
-            const mergedResource = otelResource.merge(resourceWithAdditionalAttributes)
-
-            return mergedResource;
+                return mergedResource;
+                
+            } catch(e) {
+                console.log("invokedFunctionArn key not found in ARN", e)
+            }
         }
 
+        try {
+            console.log("In API call flow")
+            var params = {
+                FunctionName: process.env.AWS_LAMBDA_FUNCTION_NAME, /* required */
+            };
+            let lambda = new LambdaClient({});
+            const command = new GetFunctionCommand(params);
+            const response = await lambda.send(command);
+
+            if (response.Configuration) {
+                const additionalAttributes = { [SemanticResourceAttributes.FAAS_ID]: response.Configuration.FunctionArn! }
+
+                const resourceWithAdditionalAttributes = new Resource(additionalAttributes)
+
+                const mergedResource = otelResource.merge(resourceWithAdditionalAttributes)
+
+                return mergedResource;
+            }
+        }
+        catch(e) {
+            console.log(e);
+            return Resource.empty();
+        }
         return Resource.empty();
-        
+
     }
 }
 
 //export const awsLambdaDetector = new AwsLambdaDetector();
-export const awsLambdaDetector = AwsLambdaDetector;
+export const awsLambdaDetector = new AwsLambdaDetector();
+export const awsLambdaDetectorWithContext = AwsLambdaDetector;

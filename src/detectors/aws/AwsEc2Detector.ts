@@ -9,12 +9,10 @@ import { awsEc2Detector as otelAWSEc2Detector } from '@opentelemetry/resource-de
 class AwsEc2Detector implements Detector {
 
     async detect(_config?: ResourceDetectionConfig): Promise<Resource> {
-        console.log("Inside AwdEc2Detector")
+        
         try {
-            console.log("Inside try AwsEc2Detector")
+            
             let awsResource = await otelAWSEc2Detector.detect();
-
-            console.log("Before AwsEc2Detector inside try return")
             return awsResource;
         }
         //TODO: implement PrivateIP detection

@@ -21,8 +21,6 @@ export class AwsLambdaDetector implements Detector {
 
     async detect(_config?: ResourceDetectionConfig): Promise<Resource> {
 
-        console.log("Context: ", this.context);
-
         let otelResource = await otelAWSLambdaDetector.detect();
 
         if (Object.keys(otelResource).length === 0) {
@@ -31,7 +29,7 @@ export class AwsLambdaDetector implements Detector {
 
         if(this.context) {
             try{
-                console.log("In Context flow")
+                console.log("Trying to retrieve invokedFunctionArn from context")
                 const additionalAttributes = { [SemanticResourceAttributes.FAAS_ID]: (this.context as any).invokedFunctionArn }
                 const resourceWithAdditionalAttributes = new Resource(additionalAttributes)
 
@@ -40,12 +38,12 @@ export class AwsLambdaDetector implements Detector {
                 return mergedResource;
                 
             } catch(e) {
-                console.log("invokedFunctionArn key not found in ARN", e)
+                console.log("invokedFunctionArn key not found in context", e)
             }
         }
 
         try {
-            console.log("In API call flow")
+            console.log("Making API call for AWS Lambda Resource Detection")
             var params = {
                 FunctionName: process.env.AWS_LAMBDA_FUNCTION_NAME, /* required */
             };
@@ -72,6 +70,5 @@ export class AwsLambdaDetector implements Detector {
     }
 }
 
-//export const awsLambdaDetector = new AwsLambdaDetector();
 export const awsLambdaDetector = new AwsLambdaDetector();
 export const awsLambdaDetectorWithContext = AwsLambdaDetector;

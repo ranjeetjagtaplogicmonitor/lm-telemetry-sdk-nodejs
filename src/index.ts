@@ -4,7 +4,7 @@ import {
     ResourceDetectionConfig,
 } from '@opentelemetry/resources';
 
-import {awsEc2Detector, awsLambdaDetector, awsLambdaDetectorWithContext} from './detectors/aws'
+import { detectorFactory } from './detectors/factory';
 
 class LMResourceDetector implements Detector {
 
@@ -15,27 +15,20 @@ class LMResourceDetector implements Detector {
     }
 
     async detect(_config?: ResourceDetectionConfig): Promise<Resource> {
-        console.log("Hii from LMSDK")
-        //LAMBDA
-        let awsResource = (this.context)?await new awsLambdaDetectorWithContext(this.context).detect():await awsLambdaDetector.detect();
-        console.log("awsResource after lambfa: ", awsResource)
-        if(Object.keys(awsResource).length > 0 && Object.keys(awsResource.attributes).length > 0) {
-            
-            return awsResource
 
-        } else {
-            //EC2
-            console.log("In else section")
-            awsResource = await awsEc2Detector.detect();
-            
-            if(Object.keys(awsResource).length > 0 && Object.keys(awsResource.attributes).length > 0) {
-                
-                return awsResource
+        let detectors = (this.context) ?  detectorFactory.getDetectors(this.context) : detectorFactory.getDetectors();
+
+        for (let i=0; i<detectors.length; i++) {
+
+            let resource = await detectors[i].detect();
+            if(Object.keys(resource).length > 0 && Object.keys(resource.attributes).length > 0) {
+               
+                return resource
+
             }
 
         }
         
-        console.log("Before empty return in LMResourceDetector")
         return Resource.empty();
         
     }

@@ -18,6 +18,7 @@
     "@opentelemetry/resource-detector-aws": "^0.24.0",
     "@opentelemetry/resource-detector-gcp": "^0.25.0",
     "@opentelemetry/resources": "^0.24.0",
-    "@types/node": "^16.7.1"
+    "@types/node": "^16.7.1",
+    "gcp-metadata": "^4.3.1"
   }
 }

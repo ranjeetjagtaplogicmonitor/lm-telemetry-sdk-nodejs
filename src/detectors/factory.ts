@@ -1,6 +1,6 @@
 import { Detector } from '@opentelemetry/resources';
 import {awsEc2Detector, awsLambdaDetector, awsLambdaDetectorWithContext} from './aws';
-import {gcpDetector} from './gcp';
+import {gcpDetector, cloudFunctionDetector} from './gcp';
 class DetectorFactory {
 
     getDetectors(context?: {}): Detector[] {
@@ -28,6 +28,7 @@ class DetectorFactory {
         //                           //
         ///////////////////////////////
 
+        detectors.push(cloudFunctionDetector);
         detectors.push(gcpDetector);
 
         return detectors;

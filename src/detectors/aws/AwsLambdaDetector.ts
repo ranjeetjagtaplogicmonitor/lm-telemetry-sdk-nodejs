@@ -21,7 +21,12 @@ export class AwsLambdaDetector implements Detector {
 
     async detect(_config?: ResourceDetectionConfig): Promise<Resource> {
 
-        let otelResource = await otelAWSLambdaDetector.detect();
+       try{
+            var otelResource = await otelAWSLambdaDetector.detect();
+       } catch(e) {
+           console.log(e)
+           return Resource.empty();
+       }
 
         if (Object.keys(otelResource).length === 0) {
             return Resource.empty();

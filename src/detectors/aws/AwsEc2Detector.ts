@@ -13,6 +13,11 @@ class AwsEc2Detector implements Detector {
         try {
             
             let awsResource = await otelAWSEc2Detector.detect();
+            let arn = `aws:ec2:${awsResource.attributes['cloud.region']}:${awsResource.attributes['cloud.account.id']}:instance/${awsResource.attributes['host.id']}`
+            const updatedResource = new Resource({
+                'aws.arn': arn
+            })
+            awsResource = awsResource.merge(updatedResource)
             return awsResource;
         }
         //TODO: implement PrivateIP detection

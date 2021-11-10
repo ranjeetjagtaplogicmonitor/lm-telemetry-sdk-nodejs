@@ -6,8 +6,10 @@
         "allowUnusedLabels": false,
         "declaration": true,
         "declarationMap": true,
+        "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "module": "commonjs",
+        "moduleResolution": "node",
         "noEmitOnError": true,
         "noFallthroughCasesInSwitch": true,
         "noImplicitOverride": true,
@@ -23,7 +25,7 @@
     },
     "include": [
         "src/**/*.ts",
-        "test/**/*.ts"
+        "tests/**/*.ts"
     ],
     "exclude": [
         "node_modules"

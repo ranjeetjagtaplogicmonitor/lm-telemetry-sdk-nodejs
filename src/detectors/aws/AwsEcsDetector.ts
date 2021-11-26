@@ -16,7 +16,7 @@ class AwsEcsDetector implements Detector {
         
             return awsResource;
         }
-        //TODO: implement PrivateIP detection
+        
         catch(e) {
             console.log("Error: ", e);
             return Resource.empty();

@@ -4,7 +4,7 @@ import { awsLambdaDetector as otelAWSLambdaDetector } from '@opentelemetry/resou
 import { LambdaClient } from '@aws-sdk/client-lambda';
 
 const { Resource } = require("@opentelemetry/resources")
-const { SemanticResourceAttributes } =require( "@opentelemetry/semantic-conventions");
+const { SemanticResourceAttributes, CloudPlatformValues } =require( "@opentelemetry/semantic-conventions");
 
 jest.mock('@opentelemetry/resource-detector-aws')
 jest.mock('@aws-sdk/client-lambda')
@@ -52,6 +52,7 @@ describe('AwsLambdaDetector', () => {
 
         const resource = await detector.detect()
         expect(resource.attributes['faas.id']).toBe('arn:aws:lambda:us-west-2:123456789012:function:my-function:$LATEST')
+        expect(resource.attributes[SemanticResourceAttributes.CLOUD_PLATFORM]).toBe(CloudPlatformValues.AWS_LAMBDA)
     })
     
     it('should make api call if context not present', async () => {
@@ -74,6 +75,7 @@ describe('AwsLambdaDetector', () => {
 
         const resource = await awsLambdaDetector.detect()
         expect(resource.attributes['faas.id']).toBe('arn:aws:lambda:us-west-2:123456789012:function:my-function:$LATEST')
+        expect(resource.attributes[SemanticResourceAttributes.CLOUD_PLATFORM]).toBe(CloudPlatformValues.AWS_LAMBDA)
 
     })
 

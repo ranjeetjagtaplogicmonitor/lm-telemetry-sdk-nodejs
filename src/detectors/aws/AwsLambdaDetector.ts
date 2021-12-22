@@ -3,7 +3,7 @@ import {
     Resource,
     ResourceDetectionConfig,
 } from '@opentelemetry/resources';
-import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
+import { SemanticResourceAttributes, CloudPlatformValues } from '@opentelemetry/semantic-conventions';
 import { awsLambdaDetector as otelAWSLambdaDetector } from '@opentelemetry/resource-detector-aws';
 import { LambdaClient, GetFunctionCommand } from '@aws-sdk/client-lambda';
 /**
@@ -32,13 +32,20 @@ export class AwsLambdaDetector implements Detector {
             return Resource.empty();
         }
 
+        const cloudPlatformAttribute = {
+            [SemanticResourceAttributes.CLOUD_PLATFORM]: CloudPlatformValues.AWS_LAMBDA
+        }
+
+        const resourceWithCloudPlatform = new Resource(cloudPlatformAttribute);
+        const mergedResource_1 = otelResource.merge(resourceWithCloudPlatform);
+
         if(this.context) {
             try{
                 console.log("Trying to retrieve invokedFunctionArn from context")
                 const additionalAttributes = { [SemanticResourceAttributes.FAAS_ID]: (this.context as any).invokedFunctionArn }
                 const resourceWithAdditionalAttributes = new Resource(additionalAttributes)
 
-                const mergedResource = otelResource.merge(resourceWithAdditionalAttributes)
+                const mergedResource = mergedResource_1.merge(resourceWithAdditionalAttributes)
 
                 return mergedResource;
                 
@@ -61,7 +68,7 @@ export class AwsLambdaDetector implements Detector {
 
                 const resourceWithAdditionalAttributes = new Resource(additionalAttributes)
 
-                const mergedResource = otelResource.merge(resourceWithAdditionalAttributes)
+                const mergedResource = mergedResource_1.merge(resourceWithAdditionalAttributes)
 
                 return mergedResource;
             }

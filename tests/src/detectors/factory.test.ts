@@ -11,8 +11,32 @@ describe('factory', () => {
         expect(detectors.length).toBe(5);
     });
 
-    it('should add only specified detector if specified in ENV', () => {
+    it('should add only EC2 detector if specified in ENV', () => {
         process.env.LM_RESOURCE_DETECTOR = 'aws_ec2';
+        const detectors = detectorFactory.getDetectors();
+        expect(detectors.length).toBe(1);
+    });
+
+    it('should add only ECS detector if specified in ENV', () => {
+        process.env.LM_RESOURCE_DETECTOR = 'aws_ecs';
+        const detectors = detectorFactory.getDetectors();
+        expect(detectors.length).toBe(1);
+    });
+
+    it('should add only Lambda detector if specified in ENV', () => {
+        process.env.LM_RESOURCE_DETECTOR = 'aws_lambda';
+        const detectors = detectorFactory.getDetectors();
+        expect(detectors.length).toBe(1);
+    });
+
+    it('should add only GCP detector if specified in ENV', () => {
+        process.env.LM_RESOURCE_DETECTOR = 'gcp';
+        const detectors = detectorFactory.getDetectors();
+        expect(detectors.length).toBe(1);
+    });
+
+    it('should add only Cloud Functions detector if specified in ENV', () => {
+        process.env.LM_RESOURCE_DETECTOR = 'gcp_cloud_functions';
         const detectors = detectorFactory.getDetectors();
         expect(detectors.length).toBe(1);
     });

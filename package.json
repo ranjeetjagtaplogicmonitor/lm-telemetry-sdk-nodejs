@@ -5,7 +5,8 @@
 	"main": "./build/index.js",
 	"scripts": {
 		"test": "jest",
-		"build": "tsc --build",
+		"compile": "tsc",
+    "build": "tsc --build --force",
 		"lint": "pretty-quick --staged && lint-staged",
 		"pretty-quick": "pretty-quick",
 		"prepare": "husky install"

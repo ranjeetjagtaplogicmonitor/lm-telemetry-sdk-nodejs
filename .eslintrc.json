@@ -21,6 +21,7 @@
     "rules": {
         "no-console": "off",
         "prettier/prettier": "error",
+        "require-jsdoc": "off",
         "import/extensions": [
             "error",
             "ignorePackages",

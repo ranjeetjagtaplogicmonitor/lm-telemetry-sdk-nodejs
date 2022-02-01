@@ -6,6 +6,7 @@ import {
 	AwsLambdaDetectorWithContext,
 } from './aws';
 import { gcpDetector, cloudFunctionDetector } from './gcp';
+import { azureVMDetector } from './azure';
 class DetectorFactory {
 	getDetectors(context?: {}): Detector[] {
 		const detectors = [];
@@ -36,6 +37,9 @@ class DetectorFactory {
 					break;
 				case 'gcp_cloud_functions':
 					detectors.push(cloudFunctionDetector);
+					break;
+				case 'azure_vm':
+					detectors.push(azureVMDetector);
 					break;
 				default:
 					console.log(
@@ -73,6 +77,14 @@ class DetectorFactory {
 
 			detectors.push(cloudFunctionDetector);
 			detectors.push(gcpDetector);
+
+			// /////////////////////////////
+			//                           //
+			//        AZURE DETECTORS    //
+			//                           //
+			// /////////////////////////////
+
+			detectors.push(azureVMDetector);
 		}
 		return detectors;
 	}

@@ -36,7 +36,8 @@ Environment variable `LM_RESOURCE_DETECTOR` must be set to one of the following 
 | `aws_ec2`                 | AWS Elastic Compute Cloud |
 | `aws_ecs`                 | AWS Elastic Container Service |
 | `aws_lambda`              | AWS Lambda |
-| `gcp`                     | Google Cloud Compute Engine (GCE) & Google Kubernetes Engine |
+| `gcp_compute_engine`      | Google Cloud Compute Engine (GCE) |
+| `gcp_kubernetes_engine`   | Google Kubernetes Engine (GKE) |
 | `gcp_cloud_functions`     | Google Cloud Functions (GCF) |
 
 

@@ -32,7 +32,8 @@ class DetectorFactory {
 						detectors.push(awsLambdaDetector);
 					}
 					break;
-				case 'gcp':
+				case 'gcp_compute_engine':
+				case 'gcp_kubernetes_engine':
 					detectors.push(gcpDetector);
 					break;
 				case 'gcp_cloud_functions':

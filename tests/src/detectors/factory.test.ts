@@ -28,8 +28,14 @@ describe('factory', () => {
 		expect(detectors.length).toBe(1);
 	});
 
-	it('should add only GCP detector if specified in ENV', () => {
-		process.env.LM_RESOURCE_DETECTOR = 'gcp';
+	it('should add only GCP detector if gcp_compute_engine specified in ENV', () => {
+		process.env.LM_RESOURCE_DETECTOR = 'gcp_compute_engine';
+		const detectors = detectorFactory.getDetectors();
+		expect(detectors.length).toBe(1);
+	});
+
+	it('should add only GCP detector if gcp_kubernetes_engine specified in ENV', () => {
+		process.env.LM_RESOURCE_DETECTOR = 'gcp_kubernetes_engine';
 		const detectors = detectorFactory.getDetectors();
 		expect(detectors.length).toBe(1);
 	});

@@ -39,5 +39,6 @@ Environment variable `LM_RESOURCE_DETECTOR` must be set to one of the following 
 | `gcp_compute_engine`      | Google Cloud Compute Engine (GCE) |
 | `gcp_kubernetes_engine`   | Google Kubernetes Engine (GKE) |
 | `gcp_cloud_functions`     | Google Cloud Functions (GCF) |
+| `azure_vm`								| Azure VM |
 
 

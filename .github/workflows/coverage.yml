@@ -39,6 +39,10 @@ jobs:
       # Install Dependencies
       - name: Install dependencies
         run: npm install
+
+      # Run Lint checks
+      - name: Lint
+        run: npm run lint-check
         
       # Runs Tests
       - name: Run Tests

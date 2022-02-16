@@ -9,7 +9,8 @@
 		"build": "tsc --build --force",
 		"lint": "pretty-quick --staged && lint-staged",
 		"pretty-quick": "pretty-quick",
-		"prepare": "husky install"
+		"prepare": "husky install",
+		"lint-check": "pretty-quick --check"
 	},
 	"keywords": [],
 	"author": "",

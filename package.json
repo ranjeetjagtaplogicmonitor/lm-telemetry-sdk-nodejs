@@ -37,6 +37,7 @@
 	"dependencies": {
 		"@aws-sdk/client-ec2": "^3.27.0",
 		"@aws-sdk/client-lambda": "^3.27.0",
+		"@aws-sdk/client-sts": "^3.51.0",
 		"@opentelemetry/resource-detector-aws": "^0.24.0",
 		"@opentelemetry/resource-detector-gcp": "^0.25.0",
 		"@opentelemetry/resources": "^0.24.0",

@@ -85,19 +85,14 @@ describe('AwsLambdaDetector', () => {
 			},
 		);
 
-		mocked(LambdaClient.prototype.send).mockReturnValue(
-			Promise.resolve({
-				Configuration: {
-					FunctionArn:
-						'arn:aws:lambda:us-west-2:123456789012:function:my-function:$LATEST',
-				},
-			}) as any,
-		);
-
+		const _getAccountId = jest.spyOn(awsLambdaDetector as any, '_getAccountId');
+		_getAccountId.mockImplementation(() => {
+			return '123456789012';
+		});
 		const resource = await awsLambdaDetector.detect();
-		expect(resource.attributes['faas.id']).toBe(
-			'arn:aws:lambda:us-west-2:123456789012:function:my-function:$LATEST',
-		);
+		expect(
+			resource.attributes[SemanticResourceAttributes.CLOUD_ACCOUNT_ID],
+		).toBe('123456789012');
 		expect(resource.attributes[SemanticResourceAttributes.CLOUD_PLATFORM]).toBe(
 			CloudPlatformValues.AWS_LAMBDA,
 		);
@@ -117,9 +112,10 @@ describe('AwsLambdaDetector', () => {
 			},
 		);
 
-		mocked(LambdaClient.prototype.send).mockReturnValue(
-			Promise.reject(new Error('Api call failed')) as any,
-		);
+		const _getAccountId = jest.spyOn(awsLambdaDetector as any, '_getAccountId');
+		_getAccountId.mockImplementation(() => {
+			return Promise.reject(new Error('Api call failed'));
+		});
 
 		const resource = await awsLambdaDetector.detect();
 		expect(resource).toBe(Resource.empty());

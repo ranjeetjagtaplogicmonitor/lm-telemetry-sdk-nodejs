@@ -8,7 +8,7 @@ import {
 	CloudPlatformValues,
 } from '@opentelemetry/semantic-conventions';
 import { awsLambdaDetector as otelAWSLambdaDetector } from '@opentelemetry/resource-detector-aws';
-import { LambdaClient, GetFunctionCommand } from '@aws-sdk/client-lambda';
+import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 /**
  * The AwsLambdaDetector can be used to detect if a process is running in AWS Lambda
  * and return a {@link Resource} populated with data about the environment.
@@ -63,35 +63,49 @@ export class AwsLambdaDetector implements Detector {
 		}
 
 		try {
-			console.log('Making API call for AWS Lambda Resource Detection');
-			const params = {
-				FunctionName: process.env.AWS_LAMBDA_FUNCTION_NAME /* required */,
+			console.log(
+				'Making Get Caller Identity API call for AWS Lambda Resource Detection',
+			);
+
+			const accountID = await this._getAccountId();
+
+			const additionalAttributes = {
+				[SemanticResourceAttributes.CLOUD_ACCOUNT_ID]: accountID,
 			};
-			const lambda = new LambdaClient({});
-			const command = new GetFunctionCommand(params);
-			const response = await lambda.send(command);
+			const resourceWithAdditionalAttributes = new Resource(
+				additionalAttributes,
+			);
 
-			if (response.Configuration) {
-				const additionalAttributes = {
-					[SemanticResourceAttributes.FAAS_ID]:
-						response.Configuration.FunctionArn!,
-				};
+			const mergedResource = mergedResource1.merge(
+				resourceWithAdditionalAttributes,
+			);
 
-				const resourceWithAdditionalAttributes = new Resource(
-					additionalAttributes,
-				);
-
-				const mergedResource = mergedResource1.merge(
-					resourceWithAdditionalAttributes,
-				);
-
-				return mergedResource;
-			}
+			return mergedResource;
 		} catch (e) {
 			console.log(e);
 			return Resource.empty();
 		}
-		return Resource.empty();
+	}
+
+	private async _getAccountId(): Promise<string> {
+		return new Promise(async (resolve, reject) => {
+			const client = new STSClient({});
+			const command = new GetCallerIdentityCommand({});
+			try {
+				const data = await client.send(command);
+				if (data.Account) {
+					resolve(data.Account);
+				} else {
+					reject(
+						new Error(
+							"Unable to get account ID from AWS Lambda's GetCallerIdentity API",
+						),
+					);
+				}
+			} catch (e) {
+				reject(e);
+			}
+		});
 	}
 }
 

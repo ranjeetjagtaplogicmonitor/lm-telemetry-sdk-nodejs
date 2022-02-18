@@ -4,7 +4,6 @@ import {
 	AwsLambdaDetectorWithContext,
 } from '../../../../src/detectors/aws/AwsLambdaDetector';
 import { awsLambdaDetector as otelAWSLambdaDetector } from '@opentelemetry/resource-detector-aws';
-import { LambdaClient } from '@aws-sdk/client-lambda';
 
 const { Resource } = require('@opentelemetry/resources');
 const {

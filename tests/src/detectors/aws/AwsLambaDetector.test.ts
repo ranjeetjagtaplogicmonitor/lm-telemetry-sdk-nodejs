@@ -12,7 +12,6 @@ const {
 } = require('@opentelemetry/semantic-conventions');
 
 jest.mock('@opentelemetry/resource-detector-aws');
-jest.mock('@aws-sdk/client-lambda');
 
 beforeEach(() => {
 	mocked(otelAWSLambdaDetector.detect).mockClear();

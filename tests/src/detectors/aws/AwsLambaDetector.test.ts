@@ -16,8 +16,6 @@ jest.mock('@aws-sdk/client-lambda');
 
 beforeEach(() => {
 	mocked(otelAWSLambdaDetector.detect).mockClear();
-	mocked(LambdaClient).mockClear();
-	mocked(LambdaClient.prototype.send).mockClear();
 });
 
 describe('AwsLambdaDetector', () => {

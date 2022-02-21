@@ -4,7 +4,6 @@ import {
 	AwsLambdaDetectorWithContext,
 } from '../../../../src/detectors/aws/AwsLambdaDetector';
 import { awsLambdaDetector as otelAWSLambdaDetector } from '@opentelemetry/resource-detector-aws';
-import { LambdaClient } from '@aws-sdk/client-lambda';
 
 const { Resource } = require('@opentelemetry/resources');
 const {
@@ -13,12 +12,9 @@ const {
 } = require('@opentelemetry/semantic-conventions');
 
 jest.mock('@opentelemetry/resource-detector-aws');
-jest.mock('@aws-sdk/client-lambda');
 
 beforeEach(() => {
 	mocked(otelAWSLambdaDetector.detect).mockClear();
-	mocked(LambdaClient).mockClear();
-	mocked(LambdaClient.prototype.send).mockClear();
 });
 
 describe('AwsLambdaDetector', () => {
@@ -85,19 +81,14 @@ describe('AwsLambdaDetector', () => {
 			},
 		);
 
-		mocked(LambdaClient.prototype.send).mockReturnValue(
-			Promise.resolve({
-				Configuration: {
-					FunctionArn:
-						'arn:aws:lambda:us-west-2:123456789012:function:my-function:$LATEST',
-				},
-			}) as any,
-		);
-
+		const _getAccountId = jest.spyOn(awsLambdaDetector as any, '_getAccountId');
+		_getAccountId.mockImplementation(() => {
+			return '123456789012';
+		});
 		const resource = await awsLambdaDetector.detect();
-		expect(resource.attributes['faas.id']).toBe(
-			'arn:aws:lambda:us-west-2:123456789012:function:my-function:$LATEST',
-		);
+		expect(
+			resource.attributes[SemanticResourceAttributes.CLOUD_ACCOUNT_ID],
+		).toBe('123456789012');
 		expect(resource.attributes[SemanticResourceAttributes.CLOUD_PLATFORM]).toBe(
 			CloudPlatformValues.AWS_LAMBDA,
 		);
@@ -117,9 +108,10 @@ describe('AwsLambdaDetector', () => {
 			},
 		);
 
-		mocked(LambdaClient.prototype.send).mockReturnValue(
-			Promise.reject(new Error('Api call failed')) as any,
-		);
+		const _getAccountId = jest.spyOn(awsLambdaDetector as any, '_getAccountId');
+		_getAccountId.mockImplementation(() => {
+			return Promise.reject(new Error('Api call failed'));
+		});
 
 		const resource = await awsLambdaDetector.detect();
 		expect(resource).toBe(Resource.empty());

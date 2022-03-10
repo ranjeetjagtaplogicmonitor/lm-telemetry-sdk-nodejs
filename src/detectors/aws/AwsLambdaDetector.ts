@@ -30,7 +30,7 @@ export class AwsLambdaDetector implements Detector {
 			return Resource.empty();
 		}
 
-		if (Object.keys(otelResource).length === 0) {
+		if (Object.keys(otelResource.attributes).length === 0) {
 			return Resource.empty();
 		}
 		const cloudPlatformAttribute = {

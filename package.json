@@ -3,6 +3,10 @@
 	"version": "1.0.0",
 	"description": "",
 	"main": "./src/index.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/logicmonitor/lm-telemetry-sdk-nodejs"
+	},
 	"scripts": {
 		"test": "jest",
 		"compile": "tsc",

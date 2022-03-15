@@ -21,11 +21,13 @@
         "strictNullChecks": true,
         "target": "es2017",
         "incremental": true,
-        "newLine": "LF"
+        "newLine": "LF",
+        "resolveJsonModule": true
     },
     "include": [
         "src/**/*.ts",
-        "tests/**/*.ts"
+        "tests/**/*.ts",
+        "./package.json"
     ],
     "exclude": [
         "node_modules"

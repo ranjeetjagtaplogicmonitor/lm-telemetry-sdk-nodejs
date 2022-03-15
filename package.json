@@ -12,7 +12,7 @@
     "compile": "tsc",
     "prebuild": "node .scripts/cleanse-pkg \"prepare,prebuild,postbuild\"",
     "build": "tsc --build --force",
-    "postbuild": "node .scripts/restore-pkg",
+    "postbuild": "node .scripts/restore-pkg && cp ./README.md ./build/",
     "lint": "pretty-quick --staged && lint-staged",
     "pretty-quick": "pretty-quick",
     "prepare": "husky install",

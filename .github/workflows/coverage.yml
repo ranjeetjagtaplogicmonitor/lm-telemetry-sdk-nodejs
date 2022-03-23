@@ -42,7 +42,7 @@ jobs:
 
       # NPM Audit
       - name: npm Audit
-        run: npm audit --audit-level=high
+        run: npm audit --audit-level=moderate --omit dev
 
       # Run Lint checks
       - name: Lint

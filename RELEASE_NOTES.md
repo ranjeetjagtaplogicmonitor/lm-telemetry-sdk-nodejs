@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+## v0.0.1
  ### Resource detection for following services:
 - #### AWS:
 		 -  EC2

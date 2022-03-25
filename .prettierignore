@@ -2,3 +2,5 @@ node_modules/*
 package.json
 package-lock.json
 yarn.lock
+RELEASE_NOTES.md
+CHANGELOG.md

@@ -27,7 +27,9 @@
     "include": [
         "src/**/*.ts",
         "tests/**/*.ts",
-        "./package.json"
+        "./package.json",
+        "./CHANGELOG.md",
+        "./RELEASE_NOTES.md"
     ],
     "exclude": [
         "node_modules"

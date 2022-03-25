@@ -17,7 +17,7 @@
     "pretty-quick": "pretty-quick",
     "prepare": "husky install",
     "lint-check": "pretty-quick --check",
-    "release": "standard-version",
+    "release": "standard-version --sign",
     "dry-release": "npm run release -- --dry-run"
   },
   "keywords": [],

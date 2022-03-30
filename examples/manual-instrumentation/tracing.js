@@ -17,7 +17,6 @@ module.exports = async function () {
 	const detectedResource = await detectResources({
 		detectors: [lmResourceDetector],
 	});
-	console.log('Resource: ', detectedResource);
 	provider.resource = detectedResource;
 	provider.addSpanProcessor(new SimpleSpanProcessor(exporter));
 	provider.register();

@@ -4,32 +4,17 @@ _NOTE: This is in private beta._
 # lm-telemetry-sdk-nodejs
 LogicMonitor Telemetry SDK for node.js
 
-## Usage:
+## Description
 
-```node
-const { opentelemetry } = require("@opentelemetry/sdk-node");
-const { lmResourceDetector} = require('lmresourcedetectorsdk');
-.
-.
-.
-.
-const sdk = new opentelemetry.NodeSDK(
-    .
-    .
-    .);
+This SDK currently exposes an asynchronous method 
+## Usage Examples:
 
-sdk.detectResources({
-    detectors: [lmResourceDetector]
-}).then(
-    () => {
-        sdk.start();
-    }
-)
-```
+- [Auto Instrumentation Example](https://github.com/logicmonitor/lm-telemetry-sdk-nodejs/tree/main/examples/auto-instrumentation)
+- [Manual Instrumentation Example](https://github.com/logicmonitor/lm-telemetry-sdk-nodejs/tree/main/examples/manual-instrumentation)
 
 ### Resource Detector env config
 
-Environment variable `LM_RESOURCE_DETECTOR` must be set to one of the following values, to set appropriate resource detector
+Environment variable `LM_RESOURCE_DETECTOR` can be set to one of the following values, to set appropriate resource detector if you want to specify explicitly.
 
 | Value                     | Description|
 |---------------------------|-------------------------------------|

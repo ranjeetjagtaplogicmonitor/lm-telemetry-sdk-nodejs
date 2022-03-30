@@ -6,7 +6,7 @@ LogicMonitor Telemetry SDK for node.js
 
 ## Description
 
-This SDK currently exposes an asynchronous method 
+This SDK currently detects Resources on the platforms listed below in the table.
 ## Usage Examples:
 
 - [Auto Instrumentation Example](https://github.com/logicmonitor/lm-telemetry-sdk-nodejs/tree/main/examples/auto-instrumentation)

@@ -40,7 +40,7 @@ Command:
 node app.js
 ```
 
-Visit `http://localhost:8080` in your browser or run a curl command in your terminal: `curl localhost:8080`
+
 
 If this application is running on any of the supported backend for resource detection, you should see the traces in your portal with the detected resources populated.
 If you are running this example on your local machine, then also you should see traces in your portal without the detected resources.

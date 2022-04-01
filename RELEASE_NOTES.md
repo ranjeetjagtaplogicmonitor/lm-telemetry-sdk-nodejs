@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+Added examples and updated README.md
 ## v0.0.1
  ### Resource detection for following services:
 - #### AWS:

@@ -1,4 +1,5 @@
 import { Detector } from '@opentelemetry/resources';
+import { cLogger } from '../utils/logger';
 import {
 	awsEc2Detector,
 	awsEcsDetector,
@@ -54,8 +55,8 @@ class DetectorFactory {
 					}
 					break;
 				default:
-					console.log(
-						'Unknown detector: ',
+					cLogger.debug(
+						'Unknown detector specified in LM_RESOURCE_DETECTOR: ',
 						process.env.LM_RESOURCE_DETECTOR,
 						' using all available detectors',
 					);

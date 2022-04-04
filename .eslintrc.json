@@ -19,7 +19,7 @@
         "@typescript-eslint"
     ],
     "rules": {
-        "no-console": "off",
+        "no-console": "error",
         "prettier/prettier": "error",
         "require-jsdoc": "off",
         "import/extensions": [

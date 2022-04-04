@@ -3,6 +3,7 @@ import {
 	Resource,
 	ResourceDetectionConfig,
 } from '@opentelemetry/resources';
+import { cLogger } from '../../utils/logger';
 
 import { awsEcsDetector as otelAWSEcsDetector } from '@opentelemetry/resource-detector-aws';
 
@@ -13,7 +14,7 @@ class AwsEcsDetector implements Detector {
 
 			return awsResource;
 		} catch (e) {
-			console.log('Error: ', e);
+			cLogger.error('Error: ', e);
 			return Resource.empty();
 		}
 	}

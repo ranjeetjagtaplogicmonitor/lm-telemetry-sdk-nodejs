@@ -3,7 +3,7 @@ import {
 	Resource,
 	ResourceDetectionConfig,
 } from '@opentelemetry/resources';
-
+import { cLogger } from './utils/logger';
 import { detectorFactory } from './detectors/factory';
 
 class LMResourceDetector implements Detector {
@@ -14,6 +14,7 @@ class LMResourceDetector implements Detector {
 	}
 
 	async detect(_config?: ResourceDetectionConfig): Promise<Resource> {
+		cLogger.info('detecting resources');
 		const detectors = this.context
 			? detectorFactory.getDetectors(this.context)
 			: detectorFactory.getDetectors();
@@ -24,10 +25,11 @@ class LMResourceDetector implements Detector {
 				Object.keys(resource).length > 0 &&
 				Object.keys(resource.attributes).length > 0
 			) {
+				cLogger.debug('detected resource: ', resource);
 				return resource;
 			}
 		}
-
+		cLogger.info('no resources detected');
 		return Resource.empty();
 	}
 }

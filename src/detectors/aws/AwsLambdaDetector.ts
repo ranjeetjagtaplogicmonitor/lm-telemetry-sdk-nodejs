@@ -9,6 +9,7 @@ import {
 } from '@opentelemetry/semantic-conventions';
 import { awsLambdaDetector as otelAWSLambdaDetector } from '@opentelemetry/resource-detector-aws';
 import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
+import { cLogger } from '../../utils/logger';
 /**
  * The AwsLambdaDetector can be used to detect if a process is running in AWS Lambda
  * and return a {@link Resource} populated with data about the environment.
@@ -26,7 +27,7 @@ export class AwsLambdaDetector implements Detector {
 		try {
 			otelResource = await otelAWSLambdaDetector.detect();
 		} catch (e) {
-			console.log(e);
+			cLogger.error(JSON.stringify(e));
 			return Resource.empty();
 		}
 
@@ -43,7 +44,7 @@ export class AwsLambdaDetector implements Detector {
 
 		if (this.context) {
 			try {
-				console.log('Trying to retrieve invokedFunctionArn from context');
+				cLogger.debug('Trying to retrieve invokedFunctionArn from context');
 				const additionalAttributes = {
 					[SemanticResourceAttributes.FAAS_ID]: (this.context as any)
 						.invokedFunctionArn,
@@ -58,12 +59,12 @@ export class AwsLambdaDetector implements Detector {
 
 				return mergedResource;
 			} catch (e) {
-				console.log('invokedFunctionArn key not found in context', e);
+				cLogger.error('invokedFunctionArn key not found in context', e);
 			}
 		}
 
 		try {
-			console.log(
+			cLogger.debug(
 				'Making Get Caller Identity API call for AWS Lambda Resource Detection',
 			);
 
@@ -82,7 +83,7 @@ export class AwsLambdaDetector implements Detector {
 
 			return mergedResource;
 		} catch (e) {
-			console.log(e);
+			cLogger.debug(JSON.stringify(e));
 			return Resource.empty();
 		}
 	}

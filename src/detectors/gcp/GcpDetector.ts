@@ -4,6 +4,7 @@ import {
 	ResourceDetectionConfig,
 } from '@opentelemetry/resources';
 import { gcpDetector as otelGCPDetector } from '@opentelemetry/resource-detector-gcp';
+import { cLogger } from '../../utils/logger';
 
 class GcpDetector implements Detector {
 	async detect(_config?: ResourceDetectionConfig): Promise<Resource> {
@@ -11,7 +12,7 @@ class GcpDetector implements Detector {
 			const gcpResource = await otelGCPDetector.detect();
 			return gcpResource;
 		} catch (e) {
-			console.log('Error: ', e);
+			cLogger.error('Error: ', e);
 			return Resource.empty();
 		}
 	}

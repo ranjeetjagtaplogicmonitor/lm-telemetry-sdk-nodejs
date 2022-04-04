@@ -7,6 +7,7 @@ import {
 	CloudProviderValues,
 	SemanticResourceAttributes,
 } from '@opentelemetry/semantic-conventions';
+import { cLogger } from '../../utils/logger';
 const gcpMetadata = require('gcp-metadata');
 
 class CloudFunctionDetector implements Detector {
@@ -34,7 +35,7 @@ class CloudFunctionDetector implements Detector {
 
 			return new Resource(attributes);
 		} catch (e) {
-			console.log('Error: ', e);
+			cLogger.error('Error: ', e);
 			return Resource.empty();
 		}
 	}

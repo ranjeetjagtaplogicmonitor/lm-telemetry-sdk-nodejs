@@ -1,9 +1,9 @@
-import { mocked } from 'ts-jest/utils';
 import {
 	awsLambdaDetector,
 	AwsLambdaDetectorWithContext,
 } from '../../../../src/detectors/aws/AwsLambdaDetector';
 import { awsLambdaDetector as otelAWSLambdaDetector } from '@opentelemetry/resource-detector-aws';
+import { STSClient } from '@aws-sdk/client-sts';
 
 const { Resource } = require('@opentelemetry/resources');
 const {
@@ -13,8 +13,8 @@ const {
 
 jest.mock('@opentelemetry/resource-detector-aws');
 
-beforeEach(() => {
-	mocked(otelAWSLambdaDetector.detect).mockClear();
+afterEach(() => {
+	jest.clearAllMocks();
 });
 
 describe('AwsLambdaDetector', () => {
@@ -23,15 +23,14 @@ describe('AwsLambdaDetector', () => {
 	});
 
 	it('should return empty resource if Lambda not detected', async () => {
-		mocked(otelAWSLambdaDetector.detect).mockReturnValue(
-			Promise.resolve(Resource.empty()),
-		);
+		const mockedDetect = jest.spyOn(otelAWSLambdaDetector, 'detect');
+		mockedDetect.mockReturnValue(Promise.resolve(Resource.empty()));
 		const resource = await awsLambdaDetector.detect();
 		expect(resource).toBe(Resource.empty());
 
-		mocked(otelAWSLambdaDetector.detect).mockClear();
+		mockedDetect.mockRestore();
 
-		mocked(otelAWSLambdaDetector.detect).mockReturnValue(
+		mockedDetect.mockReturnValue(
 			Promise.reject(new Error('Lambda not detected')),
 		);
 		const resource1 = await awsLambdaDetector.detect();
@@ -43,18 +42,17 @@ describe('AwsLambdaDetector', () => {
 			invokedFunctionArn:
 				'arn:aws:lambda:us-west-2:123456789012:function:my-function:$LATEST',
 		};
-		mocked(otelAWSLambdaDetector.detect).mockImplementation(
-			(): Promise<any> => {
-				return Promise.resolve(
-					new Resource({
-						[SemanticResourceAttributes.CLOUD_REGION]: 'us-west-2',
-						[SemanticResourceAttributes.CLOUD_PROVIDER]: 'AWS',
-						[SemanticResourceAttributes.FAAS_NAME]: 'my-function',
-						[SemanticResourceAttributes.FAAS_VERSION]: '$LATEST',
-					}),
-				);
-			},
-		);
+		const mockedDetect = jest.spyOn(otelAWSLambdaDetector, 'detect');
+		mockedDetect.mockImplementation((): Promise<any> => {
+			return Promise.resolve(
+				new Resource({
+					[SemanticResourceAttributes.CLOUD_REGION]: 'us-west-2',
+					[SemanticResourceAttributes.CLOUD_PROVIDER]: 'AWS',
+					[SemanticResourceAttributes.FAAS_NAME]: 'my-function',
+					[SemanticResourceAttributes.FAAS_VERSION]: '$LATEST',
+				}),
+			);
+		});
 
 		const detector = new AwsLambdaDetectorWithContext(context);
 
@@ -68,22 +66,23 @@ describe('AwsLambdaDetector', () => {
 	});
 
 	it('should make api call if context not present', async () => {
-		mocked(otelAWSLambdaDetector.detect).mockImplementation(
-			(): Promise<any> => {
-				return Promise.resolve(
-					new Resource({
-						[SemanticResourceAttributes.CLOUD_REGION]: 'us-west-2',
-						[SemanticResourceAttributes.CLOUD_PROVIDER]: 'AWS',
-						[SemanticResourceAttributes.FAAS_NAME]: 'my-function',
-						[SemanticResourceAttributes.FAAS_VERSION]: '$LATEST',
-					}),
-				);
-			},
-		);
+		const mockedDetect = jest.spyOn(otelAWSLambdaDetector, 'detect');
+		mockedDetect.mockImplementation((): Promise<any> => {
+			return Promise.resolve(
+				new Resource({
+					[SemanticResourceAttributes.CLOUD_REGION]: 'us-west-2',
+					[SemanticResourceAttributes.CLOUD_PROVIDER]: 'AWS',
+					[SemanticResourceAttributes.FAAS_NAME]: 'my-function',
+					[SemanticResourceAttributes.FAAS_VERSION]: '$LATEST',
+				}),
+			);
+		});
 
-		const _getAccountId = jest.spyOn(awsLambdaDetector as any, '_getAccountId');
-		_getAccountId.mockImplementation(() => {
-			return '123456789012';
+		const mockedSend = jest.spyOn(STSClient.prototype, 'send');
+		mockedSend.mockImplementation(() => {
+			return Promise.resolve({
+				Account: '123456789012',
+			});
 		});
 		const resource = await awsLambdaDetector.detect();
 		expect(
@@ -92,28 +91,83 @@ describe('AwsLambdaDetector', () => {
 		expect(resource.attributes[SemanticResourceAttributes.CLOUD_PLATFORM]).toBe(
 			CloudPlatformValues.AWS_LAMBDA,
 		);
+		mockedSend.mockRestore();
+	});
+
+	it('should make api call if context present but invokedFunctionArn is not present', async () => {
+		const context = {
+			dummyKey: 'dummyKey',
+		};
+		const mockedDetect = jest.spyOn(otelAWSLambdaDetector, 'detect');
+		mockedDetect.mockImplementation((): Promise<any> => {
+			return Promise.resolve(
+				new Resource({
+					[SemanticResourceAttributes.CLOUD_REGION]: 'us-west-2',
+					[SemanticResourceAttributes.CLOUD_PROVIDER]: 'AWS',
+					[SemanticResourceAttributes.FAAS_NAME]: 'my-function',
+					[SemanticResourceAttributes.FAAS_VERSION]: '$LATEST',
+				}),
+			);
+		});
+		const mockedSend = jest.spyOn(STSClient.prototype, 'send');
+		mockedSend.mockImplementation(() => {
+			return Promise.resolve({
+				Account: '123456789012',
+			});
+		});
+		const detector = new AwsLambdaDetectorWithContext(context);
+		const resource = await detector.detect();
+		expect(
+			resource.attributes[SemanticResourceAttributes.CLOUD_ACCOUNT_ID],
+		).toBe('123456789012');
+		expect(resource.attributes[SemanticResourceAttributes.CLOUD_PLATFORM]).toBe(
+			CloudPlatformValues.AWS_LAMBDA,
+		);
+		mockedSend.mockRestore();
 	});
 
 	it('should return empty resource if api call fails', async () => {
-		mocked(otelAWSLambdaDetector.detect).mockImplementation(
-			(): Promise<any> => {
-				return Promise.resolve(
-					new Resource({
-						[SemanticResourceAttributes.CLOUD_REGION]: 'us-west-2',
-						[SemanticResourceAttributes.CLOUD_PROVIDER]: 'AWS',
-						[SemanticResourceAttributes.FAAS_NAME]: 'my-function',
-						[SemanticResourceAttributes.FAAS_VERSION]: '$LATEST',
-					}),
-				);
-			},
-		);
-
-		const _getAccountId = jest.spyOn(awsLambdaDetector as any, '_getAccountId');
-		_getAccountId.mockImplementation(() => {
-			return Promise.reject(new Error('Api call failed'));
+		const mockedDetect = jest.spyOn(otelAWSLambdaDetector, 'detect');
+		mockedDetect.mockImplementation((): Promise<any> => {
+			return Promise.resolve(
+				new Resource({
+					[SemanticResourceAttributes.CLOUD_REGION]: 'us-west-2',
+					[SemanticResourceAttributes.CLOUD_PROVIDER]: 'AWS',
+					[SemanticResourceAttributes.FAAS_NAME]: 'my-function',
+					[SemanticResourceAttributes.FAAS_VERSION]: '$LATEST',
+				}),
+			);
+		});
+		const mockedSend = jest.spyOn(STSClient.prototype, 'send');
+		mockedSend.mockImplementation(() => {
+			return Promise.reject(new Error('API call failed'));
 		});
 
 		const resource = await awsLambdaDetector.detect();
 		expect(resource).toBe(Resource.empty());
+		mockedSend.mockRestore();
+	});
+
+	it('should return empty resource if api call succeeds but Account id not present in response', async () => {
+		const mockedDetect = jest.spyOn(otelAWSLambdaDetector, 'detect');
+		mockedDetect.mockImplementation((): Promise<any> => {
+			return Promise.resolve(
+				new Resource({
+					[SemanticResourceAttributes.CLOUD_REGION]: 'us-west-2',
+					[SemanticResourceAttributes.CLOUD_PROVIDER]: 'AWS',
+					[SemanticResourceAttributes.FAAS_NAME]: 'my-function',
+					[SemanticResourceAttributes.FAAS_VERSION]: '$LATEST',
+				}),
+			);
+		});
+		const mockedSend = jest.spyOn(STSClient.prototype, 'send');
+		mockedSend.mockImplementation(() => {
+			return Promise.resolve({
+				dummyKey: 'dummyValue',
+			});
+		});
+		const resource = await awsLambdaDetector.detect();
+		expect(resource).toBe(Resource.empty());
+		mockedSend.mockRestore();
 	});
 });

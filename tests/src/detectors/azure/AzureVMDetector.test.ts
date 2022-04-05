@@ -81,5 +81,19 @@ describe('AzureVMDetector', () => {
 		expect(resource).toBeDefined();
 		expect(resource).toBe(Resource.empty());
 		scope.done();
+		nock.abortPendingRequests();
+	});
+
+	it('should return empty resource if IDMS returns statusCode not in range [200,300)', async () => {
+		const scope = nock('http://' + azureVMDetector.AZURE_IDMS_ENDPOINT)
+			.get('/metadata/instance')
+			.query({ 'api-version': azureVMDetector.AZURE_API_VERSION })
+			.matchHeader('Metadata', 'true')
+			.reply(500);
+		const resource = await azureVMDetector.detect();
+
+		expect(resource).toBeDefined();
+		expect(resource).toBe(Resource.empty());
+		scope.done();
 	});
 });

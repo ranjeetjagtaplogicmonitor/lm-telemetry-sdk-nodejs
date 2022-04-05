@@ -26,6 +26,13 @@ describe('factory', () => {
 		process.env.LM_RESOURCE_DETECTOR = 'aws_lambda';
 		const detectors = detectorFactory.getDetectors();
 		expect(detectors.length).toBe(1);
+
+		// detector with context
+		const context = {
+			dummyKey: 'dummyValue',
+		};
+		const detectorsWithContext = detectorFactory.getDetectors(context);
+		expect(detectorsWithContext.length).toBe(1);
 	});
 
 	it('should add only GCP detector if gcp_compute_engine specified in ENV', () => {
@@ -56,11 +63,25 @@ describe('factory', () => {
 		process.env.LM_RESOURCE_DETECTOR = 'azure_functions';
 		const detectors = detectorFactory.getDetectors();
 		expect(detectors.length).toBe(1);
+
+		// detector with context
+		const context = {
+			dummyKey: 'dummyValue',
+		};
+		const detectorsWithContext = detectorFactory.getDetectors(context);
+		expect(detectorsWithContext.length).toBe(1);
 	});
 
 	it('should add all detectors if undefined detector specified in ENV', () => {
 		process.env.LM_RESOURCE_DETECTOR = 'undefined';
 		const detectors = detectorFactory.getDetectors();
 		expect(detectors.length).toBe(7);
+
+		// detector with context
+		const context = {
+			dummyKey: 'dummyValue',
+		};
+		const detectorsWithContext = detectorFactory.getDetectors(context);
+		expect(detectorsWithContext.length).toBe(7);
 	});
 });

@@ -1,5 +1,4 @@
 import { gcpDetector } from '../../../../src/detectors/gcp/GcpDetector';
-import { mocked } from 'ts-jest/utils';
 import { gcpDetector as otelGCPDetector } from '@opentelemetry/resource-detector-gcp';
 import { Resource } from '@opentelemetry/resources';
 const {
@@ -8,13 +7,14 @@ const {
 
 jest.mock('@opentelemetry/resource-detector-gcp');
 
-beforeEach(() => {
-	mocked(otelGCPDetector.detect).mockClear();
+afterEach(() => {
+	jest.clearAllMocks();
 });
 
 describe('GCP Detectors', () => {
 	it('should return empty resource if GCP not detected', async () => {
-		mocked(otelGCPDetector.detect).mockImplementation((): Promise<any> => {
+		const mockedDetect = jest.spyOn(otelGCPDetector, 'detect');
+		mockedDetect.mockImplementation((): Promise<any> => {
 			return Promise.reject(new Error('GCP not detected'));
 		});
 
@@ -30,8 +30,8 @@ describe('GCP Detectors', () => {
 			[SemanticResourceAttributes.HOST_ID]: '1234567890123456789',
 			[SemanticResourceAttributes.CLOUD_PROVIDER]: 'gcp',
 		});
-
-		mocked(otelGCPDetector.detect).mockImplementation((): Promise<any> => {
+		const mockedDetect = jest.spyOn(otelGCPDetector, 'detect');
+		mockedDetect.mockImplementation((): Promise<any> => {
 			return Promise.resolve(expectedResource);
 		});
 

@@ -45,6 +45,11 @@ export class AwsLambdaDetector implements Detector {
 		if (this.context) {
 			try {
 				cLogger.debug('Trying to retrieve invokedFunctionArn from context');
+				if (typeof (this.context as any).invokedFunctionArn === 'undefined') {
+					throw new Error(
+						'invokedFunctionArn key not found in context, making API call',
+					);
+				}
 				const additionalAttributes = {
 					[SemanticResourceAttributes.FAAS_ID]: (this.context as any)
 						.invokedFunctionArn,

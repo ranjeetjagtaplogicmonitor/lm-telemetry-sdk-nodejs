@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2](https://github.com/logicmonitor/lm-telemetry-sdk-nodejs/compare/v0.0.1...v0.0.2) (2022-04-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* rename export to conform to convention
+
+### Bug Fixes
+
+* add examples ([a923d3e](https://github.com/logicmonitor/lm-telemetry-sdk-nodejs/commit/a923d3e936e937f4180f4e9597f871111dbf6e23))
+* add invokedFunctionArn undefined error handling ([a46b05c](https://github.com/logicmonitor/lm-telemetry-sdk-nodejs/commit/a46b05cbd80ea8d0c181808e5298e35f4b75591f))
+* remove console logs and integret otel diag logger ([9e1c6c9](https://github.com/logicmonitor/lm-telemetry-sdk-nodejs/commit/9e1c6c9c5aa0a8bec1a98e253da54ae682f222b9))
+* rename export to conform to convention ([77d7d3a](https://github.com/logicmonitor/lm-telemetry-sdk-nodejs/commit/77d7d3af933d7defe18fa2d8f3ad53be8302e35f))
+* update dependency ([209ee91](https://github.com/logicmonitor/lm-telemetry-sdk-nodejs/commit/209ee91cc7511df71624fe216fc732ee5a53900e))
+
 ### 0.0.1 (2022-03-25)
 
 

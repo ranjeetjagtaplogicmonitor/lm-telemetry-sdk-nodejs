@@ -1,8 +1,13 @@
 # Release notes: lm-telemetry-sdk-nodejs
 
 ## Unreleased
+> Release notes pertaining to changes not yet published go here.
+## v0.0.2
+### Breaking Changes
+* Renamed export `lmResourceDetectorWithContext` to `LmResourceDetectorWithContext` to conform to convention.
 
-Added examples and updated README.md
+### Notes
+- Added examples and updated README.md
 ## v0.0.1
  ### Resource detection for following services:
 - #### AWS:

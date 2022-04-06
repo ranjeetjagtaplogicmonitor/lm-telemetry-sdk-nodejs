@@ -35,5 +35,4 @@ class LMResourceDetector implements Detector {
 }
 
 export const lmResourceDetector = new LMResourceDetector();
-export const lmResourceDetectorWithContext = LMResourceDetector;
-// export * from './detectors/aws';
+export const LmResourceDetectorWithContext = LMResourceDetector;

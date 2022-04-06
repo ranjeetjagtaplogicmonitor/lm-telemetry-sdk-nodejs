@@ -1,5 +1,4 @@
 import { cloudFunctionDetector } from '../../../../src/detectors/gcp/CloudFunctionDetector';
-import { mocked } from 'ts-jest/utils';
 const gcpMetadata = require('gcp-metadata');
 import { Resource } from '@opentelemetry/resources';
 const {
@@ -8,26 +7,26 @@ const {
 
 jest.mock('gcp-metadata');
 
-beforeEach(() => {
-	mocked(gcpMetadata.isAvailable).mockClear();
-	mocked(gcpMetadata.instance).mockClear();
+afterEach(() => {
+	jest.clearAllMocks();
 });
 
 describe('GCP CloudFunction Detector', () => {
 	it('should return empty Resource if GCP metadata is not available', async () => {
-		mocked(gcpMetadata.isAvailable).mockReturnValue(Promise.resolve(false));
+		const mockedIsAvailable = jest.spyOn(gcpMetadata, 'isAvailable');
+		mockedIsAvailable.mockReturnValue(Promise.resolve(false));
 
 		const resource = await cloudFunctionDetector.detect();
 		expect(resource).toBe(Resource.empty());
 	});
 
 	it('should return populated Resource if GCP metadata is available', async () => {
-		mocked(gcpMetadata.isAvailable).mockReturnValue(Promise.resolve(true));
-		mocked(gcpMetadata.project).mockReturnValue(
-			Promise.resolve('test-project'),
-		);
-		mocked(gcpMetadata.instance).mockImplementation((param: string) => {
-			// let res = ""
+		const mockedIsAvailable = jest.spyOn(gcpMetadata, 'isAvailable');
+		mockedIsAvailable.mockReturnValue(Promise.resolve(true));
+		const mockedProject = jest.spyOn(gcpMetadata, 'project');
+		mockedProject.mockReturnValue(Promise.resolve('test-project'));
+		const mockedInstance = jest.spyOn(gcpMetadata, 'instance');
+		mockedInstance.mockImplementation((param): Promise<any> => {
 			switch (param) {
 				case 'region':
 					return Promise.resolve('test-region');
@@ -51,5 +50,15 @@ describe('GCP CloudFunction Detector', () => {
 				[SemanticResourceAttributes.FAAS_NAME]: 'test-service',
 			}),
 		);
+	});
+
+	it('should return empty resource if there is an error', async () => {
+		const mockedIsAvailable = jest.spyOn(gcpMetadata, 'isAvailable');
+		mockedIsAvailable.mockReturnValue(Promise.resolve(true));
+		const mockedProject = jest.spyOn(gcpMetadata, 'project');
+		mockedProject.mockReturnValue(Promise.reject(new Error('error')));
+
+		const resource = await cloudFunctionDetector.detect();
+		expect(resource).toBe(Resource.empty());
 	});
 });
